@@ -32,7 +32,23 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.header-menu {
+  display: flex;
+  justify-content: space-evenly;
+  list-style-type: none;
+  padding: 0;
+  overflow: hidden;
+  height: 60px;
+  align-items: center;
+  margin: 20px 0px;
+}
+
+.menus {
+  display: block;
 }
