@@ -5,9 +5,11 @@ import './style.css'
 
 export default function Chat(props) {
 
-    const webSocket = useRef(new WebSocket('ws://localhost:8100/ws/connect'))
+    const webSocket = useRef(new WebSocket('ws://localhost:8100/ws/connect'));
+    const chatBoxRef = useRef();
     const [messageToSend, setMessageToSend] = useState('');
     const [messages, setMessages] = useState([]);
+    const [autoScroll, setAutoScroll] = useState(true);
 
 
     const updateMessages = (sockMessage) => {
@@ -16,6 +18,47 @@ export default function Chat(props) {
             msg.push(JSON.parse(sockMessage));
             return msg
         });
+    }
+
+    const handleScroll = () => {
+
+        const windowScrollHeight = window.scrollY + window.innerHeight;
+
+        const chatBoxHeight = chatBoxRef.current.scrollHeight;
+
+        if (windowScrollHeight < chatBoxHeight) {
+            setAutoScroll(false);
+        } else {
+            setAutoScroll(true);
+        }
+    }
+
+    const handleChatInput = (e) => {
+        setMessageToSend(e.target.value);
+    }
+
+    const sendMessage = () => {
+
+        if (messageToSend !== '') {
+
+            const msg = JSON.stringify({
+                user: props.user,
+                message: messageToSend
+            });
+
+            updateMessages(msg);
+
+            webSocket.current.send(msg);
+        }
+
+        setMessageToSend('');
+    }
+
+    const enterSendMessage = (e) => {
+        if (e.key === 'Enter') {
+            setAutoScroll(true);
+            sendMessage();
+        }
     }
 
 
@@ -28,43 +71,32 @@ export default function Chat(props) {
                 updateMessages(e.data);
             }
         }
+
+        window.addEventListener('scroll', (e) => handleScroll(e))
+        return window.removeEventListener('scroll', (e) => handleScroll(e))
     }, []);
 
-    const handleChatInput = (e) => {
-        setMessageToSend(e.target.value);
-    }
+    useEffect(() => {
 
-    const sendMessage = () => {
-
-        if (messageToSend !== '') {
-            webSocket.current.send(JSON.stringify({
-                user: props.user,
-                message: messageToSend
-            }));
+        if (autoScroll) {
+            chatBoxRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         }
 
-        setMessageToSend('');
-    }
-
-    const enterSendMessage = (e) => {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    }
+    }, [messages, autoScroll])
 
     return (
         <div>
-            <div className="chat-container">
+            <div className="chat-container" ref={chatBoxRef}>
                 <Stack spacing={3}>
                     {
                         messages && messages.map((txt, i) => {
                             if (txt.user === props.user) {
                                 return (
                                     <div key={i}>
-                                        <div className="text-box-response">
+                                        <div className="text-box-reply">
                                             <p>{txt.message}</p>
                                             <div className="text-box-tag">
-                                                <Tag size='lg' key='lg' variant='subtle' colorScheme='cyan'>
+                                                <Tag size='lg' key='lg' variant='subtle' colorScheme='blue'>
                                                     <TagLabel>{txt.user}</TagLabel>
                                                 </Tag>
                                             </div>
@@ -74,13 +106,13 @@ export default function Chat(props) {
                             } else {
                                 return (
                                     <div key={i}>
-                                        <div className="text-box-reply">
+                                        <div className="text-box-response">
+                                            <p>{txt.message}</p>
                                             <div className="text-box-tag">
-                                                <Tag size='lg' key='lg' variant='subtle' colorScheme='blue'>
+                                                <Tag size='lg' key='lg' variant='subtle' colorScheme='cyan'>
                                                     <TagLabel>{txt.user}</TagLabel>
                                                 </Tag>
                                             </div>
-                                            <p>{txt.message}</p>
                                         </div>
                                     </div>
                                 );
