@@ -7,6 +7,7 @@ export default function Chat(props) {
 
     const webSocket = useRef(new WebSocket('ws://localhost:8100/ws/connect'));
     const chatBoxRef = useRef();
+    const [connected, setConnected] = useState(false);
     const [messageToSend, setMessageToSend] = useState('');
     const [messages, setMessages] = useState([]);
     const [autoScroll, setAutoScroll] = useState(true);
@@ -66,6 +67,8 @@ export default function Chat(props) {
 
         webSocket.current.onopen = () => {
             console.log('Websocket connected')
+            setConnected(true);
+
             webSocket.current.onmessage = (e) => {
                 console.log('Message from server ', e.data);
                 updateMessages(e.data);
@@ -73,7 +76,13 @@ export default function Chat(props) {
         }
 
         window.addEventListener('scroll', (e) => handleScroll(e))
-        return window.removeEventListener('scroll', (e) => handleScroll(e))
+        return () => {
+            if (connected) {
+                webSocket.current.close();
+            }
+            window.removeEventListener('scroll', (e) => handleScroll(e))
+
+        }
     }, []);
 
     useEffect(() => {
@@ -164,10 +173,11 @@ export default function Chat(props) {
             <div className="input-group">
                 <div className="input-container">
                     <Input
-                        placeholder='Enter chat here'
+                        placeholder={connected ? 'Enter chat here' : 'Connecting...'}
                         size='lg'
                         className="chat-input"
                         value={messageToSend}
+                        isDisabled={!connected}
                         onChange={(e) => handleChatInput(e)}
                         onKeyDown={(e) => enterSendMessage(e)}
                     />
@@ -175,6 +185,7 @@ export default function Chat(props) {
                 <div className="input-icon-container">
                     <IconButton
                         onClick={() => sendMessage()}
+                        isDisabled={!connected}
                         colorScheme='teal'
                         aria-label='Send Chat'
                         size='lg'
