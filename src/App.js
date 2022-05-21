@@ -13,22 +13,35 @@ function App() {
   return (
     <Router>
       <div>
-        <nav>
+        <nav className="header-container">
           <ul className="header-menu">
             <li className="menus">
-              <Link to="/">
-                <Button colorScheme='teal' size='lg'>Home</Button>
-              </Link>
+              <div>
+                Logo
+              </div>
+            </li>
+          </ul>
+          <ul className="header-menu">
+            <li className="menus">
+              <div>
+                <Link to="/">
+                  <Button colorScheme='teal' variant='ghost' size='lg'>Home</Button>
+                </Link>
+              </div>
             </li>
             <li className="menus">
-              <Link to="/user1">
-                <Button colorScheme='teal' size='lg'>User 1</Button>
-              </Link>
+              <div>
+                <Link to="/user1">
+                  <Button colorScheme='teal' variant='ghost' size='lg'>User 1</Button>
+                </Link>
+              </div>
             </li>
             <li className="menus">
-              <Link to="/user2" target="_blank">
-                <Button colorScheme='teal' size='lg'>User 2</Button>
-              </Link>
+              <div>
+                <Link to="/user2" target="_blank">
+                  <Button colorScheme='teal' variant='ghost' size='lg'>User 2</Button>
+                </Link>
+              </div>
             </li>
           </ul>
         </nav>
