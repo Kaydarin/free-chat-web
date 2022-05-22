@@ -66,6 +66,7 @@ export default function Chat(props) {
 
         if (webSocket == null) {
             const socket = new WebSocket('ws://localhost:8100/ws/connect');
+            console.log('Websocket connected')
 
             setWebSocket(socket);
 

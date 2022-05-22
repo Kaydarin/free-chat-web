@@ -8,8 +8,17 @@ import Home from './pages/home';
 import User1 from './pages/user1';
 import User2 from './pages/user2';
 import { Button } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { useSelector } from 'react-redux';
 
 function App() {
+
+  const { appState } = useSelector(state => state.app)
+
+  useEffect(() => {
+    console.log('appState', appState)
+  }, []);
+
   return (
     <Router>
       <div>
