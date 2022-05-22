@@ -46,7 +46,7 @@
 
 .header-menu {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   list-style-type: none;
   padding: 0;
   overflow: hidden;

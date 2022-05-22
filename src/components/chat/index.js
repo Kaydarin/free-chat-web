@@ -5,12 +5,11 @@ import './style.css'
 
 export default function Chat(props) {
 
-    const webSocket = useRef(new WebSocket('ws://localhost:8100/ws/connect'));
-    const chatBoxRef = useRef();
-    const [connected, setConnected] = useState(false);
+    const [webSocket, setWebSocket] = useState(null);
     const [messageToSend, setMessageToSend] = useState('');
     const [messages, setMessages] = useState([]);
     const [autoScroll, setAutoScroll] = useState(true);
+    const chatBoxRef = useRef();
 
 
     const updateMessages = (sockMessage) => {
@@ -49,7 +48,7 @@ export default function Chat(props) {
 
             updateMessages(msg);
 
-            webSocket.current.send(msg);
+            webSocket.send(msg);
         }
 
         setMessageToSend('');
@@ -65,25 +64,31 @@ export default function Chat(props) {
 
     useEffect(() => {
 
-        webSocket.current.onopen = () => {
-            console.log('Websocket connected')
-            setConnected(true);
+        if (webSocket == null) {
+            const socket = new WebSocket('ws://localhost:8100/ws/connect');
 
-            webSocket.current.onmessage = (e) => {
-                console.log('Message from server ', e.data);
-                updateMessages(e.data);
+            setWebSocket(socket);
+
+            socket.onopen = () => {
+
+                socket.onmessage = (e) => {
+                    console.log('Message from server ', e.data);
+                    updateMessages(e.data);
+                }
             }
+
+            window.addEventListener('scroll', (e) => handleScroll(e))
         }
 
-        window.addEventListener('scroll', (e) => handleScroll(e))
         return () => {
-            if (connected) {
-                webSocket.current.close();
-            }
-            window.removeEventListener('scroll', (e) => handleScroll(e))
 
+            if (webSocket !== null) {
+                webSocket.close();
+            }
+
+            window.removeEventListener('scroll', (e) => handleScroll(e))
         }
-    }, []);
+    }, [webSocket]);
 
     useEffect(() => {
 
@@ -173,11 +178,11 @@ export default function Chat(props) {
             <div className="input-group">
                 <div className="input-container">
                     <Input
-                        placeholder={connected ? 'Enter chat here' : 'Connecting...'}
+                        placeholder={webSocket !== null ? 'Enter chat here' : 'Connecting...'}
                         size='lg'
                         className="chat-input"
                         value={messageToSend}
-                        isDisabled={!connected}
+                        isDisabled={webSocket == null}
                         onChange={(e) => handleChatInput(e)}
                         onKeyDown={(e) => enterSendMessage(e)}
                     />
@@ -185,7 +190,7 @@ export default function Chat(props) {
                 <div className="input-icon-container">
                     <IconButton
                         onClick={() => sendMessage()}
-                        isDisabled={!connected}
+                        isDisabled={webSocket == null}
                         colorScheme='teal'
                         aria-label='Send Chat'
                         size='lg'
