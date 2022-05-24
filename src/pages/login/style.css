@@ -1,0 +1,41 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    height: 80%;
+    align-items: center;
+}
+
+.login-box {
+    width: 30%;
+    height: auto;
+    border: 1px solid #e8e8e8;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.select-button {
+    padding: 15px;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.select-button:hover {
+    background-color: var(--chakra-colors-teal-50);
+}
+
+.select-button:active,
+.select-button:focus {
+    border: 1px solid var(--chakra-colors-teal-500);
+}
+
+.login-credentials {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.login-submit-button {
+    float: right;
+}
