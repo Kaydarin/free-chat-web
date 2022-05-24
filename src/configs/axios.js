@@ -5,6 +5,7 @@ const apiPrefix = '/api';
 
 const instance = axios.create({
     baseURL: baseUrl + apiPrefix,
+    withCredentials: true,
 });
 
 instance.interceptors.request.use(
