@@ -1,11 +1,17 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLogOut } from '@store/app';
 import { Button } from "@chakra-ui/react";
 import './style.css'
 
 
 export default function MenuHeader() {
 
+    const dispatch = useDispatch();
     const { isLoggedIn } = useSelector(state => state.app);
+
+    const handleLogout = () => {
+        dispatch(setLogOut());
+    }
 
     return (
         <nav className="header-container">
@@ -21,7 +27,7 @@ export default function MenuHeader() {
                     <>
                         <li className="menus">
                             <div>
-                                <Button colorScheme='teal' variant='ghost' size='lg'>Logout</Button>
+                                <Button colorScheme='teal' variant='ghost' size='lg' onClick={() => handleLogout()}>Logout</Button>
                             </div>
                         </li>
                     </>

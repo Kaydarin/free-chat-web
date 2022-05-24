@@ -1,4 +1,11 @@
 import axios from 'axios';
+import { setLogOut } from '@store/app';
+
+let store;
+
+export const injectStore = _store => {
+    store = _store
+}
 
 const baseUrl = 'http://localhost:8100';
 const apiPrefix = '/api';
@@ -28,6 +35,9 @@ instance.interceptors.response.use(
     },
     function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
+        if (error.response && error.response.status === 403) {
+            store.dispatch(setLogOut());
+        }
         return Promise.reject(error);
     },
 );

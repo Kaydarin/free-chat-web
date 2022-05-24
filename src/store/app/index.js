@@ -48,6 +48,13 @@ export const test = createAsyncThunk(
 export const app = createSlice({
     name: 'app',
     initialState,
+    reducers: {
+        setLogOut: () => {
+            return {
+                ...initialState,
+            };
+        },
+    },
     extraReducers: builder => {
 
         const matchBuilder = (action, status) =>
@@ -83,5 +90,7 @@ export const app = createSlice({
         );
     },
 });
+
+export const { setLogOut } = app.actions;
 
 export default app;
