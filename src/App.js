@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Login from './pages/login';
 import Chat from "@pages/chat";
+import MenuHeader from "@components/menu-header";
 import { useSelector } from 'react-redux';
 
 const PublicRoutes = () => {
@@ -28,6 +29,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
+        <MenuHeader />
         <Routes>
           <Route path="/" element={<PrivateRoutes />}>
             <Route path="/chat" element={<Chat />} />

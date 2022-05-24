@@ -1,0 +1,33 @@
+.header-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.header-menu {
+  display: flex;
+  justify-content: flex-end;
+  list-style-type: none;
+  padding: 0;
+  overflow: hidden;
+  height: 80px;
+  align-items: center;
+}
+
+.header-menu:nth-child(2) {
+  min-width: 340px;
+}
+
+.menus {
+  display: block;
+}
+
+.menus>div {
+  padding: 5px 25px;
+}
+
+.menus:not(:last-child)>div {
+  padding: 10px 25px;
+  border-right: 1px solid #e8e8e8;
+}
