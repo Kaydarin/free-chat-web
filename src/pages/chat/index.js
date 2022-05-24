@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { Stack, Input, IconButton, Tag, TagLabel } from "@chakra-ui/react"
 import { FaPaperPlane } from "react-icons/fa";
 import './style.css'
 
-export default function Chat(props) {
+export default function Chat() {
 
+    const { username } = useSelector(state => state.app);
     const [webSocket, setWebSocket] = useState(null);
     const [messageToSend, setMessageToSend] = useState('');
     const [messages, setMessages] = useState([]);
@@ -42,7 +44,7 @@ export default function Chat(props) {
         if (messageToSend !== '') {
 
             const msg = JSON.stringify({
-                user: props.user,
+                user: username,
                 message: messageToSend
             });
 
@@ -105,7 +107,7 @@ export default function Chat(props) {
                 <Stack spacing={3}>
                     {
                         messages && messages.map((txt, i) => {
-                            if (txt.user === props.user) {
+                            if (txt.user === username) {
                                 return (
                                     <div key={i}>
                                         <div className="text-box-reply">

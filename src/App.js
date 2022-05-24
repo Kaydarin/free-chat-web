@@ -6,14 +6,14 @@ import {
   Outlet
 } from "react-router-dom";
 import Login from './pages/login';
-import User1 from "@pages/user1";
+import Chat from "@pages/chat";
 import { useSelector } from 'react-redux';
 
 const PublicRoutes = () => {
 
   const { isLoggedIn } = useSelector(state => state.app);
 
-  return isLoggedIn ? <Navigate to="/user1" /> : <Outlet />
+  return isLoggedIn ? <Navigate to="/chat" /> : <Outlet />
 }
 
 const PrivateRoutes = () => {
@@ -30,7 +30,7 @@ function App() {
       <div className="app">
         <Routes>
           <Route path="/" element={<PrivateRoutes />}>
-            <Route path="/user1" element={<User1 />} />
+            <Route path="/chat" element={<Chat />} />
           </Route>
           <Route path="/login" element={<PublicRoutes />}>
             <Route path="/login" element={<Login />} />
