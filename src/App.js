@@ -9,6 +9,7 @@ import Login from './pages/login';
 import Chat from "@pages/chat";
 import MenuHeader from "@components/menu-header";
 import { useSelector } from 'react-redux';
+import './App.css'
 
 const PublicRoutes = () => {
 
