@@ -1,6 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Stack, Input, IconButton, Tag, TagLabel } from "@chakra-ui/react"
+import {
+    Stack,
+    Tag,
+    TagLabel,
+    Input,
+    IconButton,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverHeader,
+    PopoverBody
+} from "@chakra-ui/react"
 import { FaPaperPlane } from "react-icons/fa";
 import './style.css'
 
@@ -11,6 +24,8 @@ export default function Chat() {
     const [messageToSend, setMessageToSend] = useState('');
     const [messages, setMessages] = useState([]);
     const [autoScroll, setAutoScroll] = useState(true);
+    const [openPopover, setOpenPopover] = useState(true);
+    const popoverFocusRef = useRef();
     const chatBoxRef = useRef();
 
 
@@ -99,6 +114,10 @@ export default function Chat() {
             chatBoxRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         }
 
+        if (messages.length !== 0) {
+            setOpenPopover(false);
+        }
+
     }, [messages, autoScroll])
 
     return (
@@ -180,15 +199,31 @@ export default function Chat() {
             </div>
             <div className="input-group">
                 <div className="input-container">
-                    <Input
-                        placeholder={webSocket !== null ? 'Enter chat here' : 'Connecting...'}
-                        size='lg'
-                        className="chat-input"
-                        value={messageToSend}
-                        isDisabled={webSocket == null}
-                        onChange={(e) => handleChatInput(e)}
-                        onKeyDown={(e) => enterSendMessage(e)}
-                    />
+                    <Popover
+                        isOpen={openPopover}
+                        onClose={() => setOpenPopover(false)}
+                        placement='top'
+                        initialFocusRef={popoverFocusRef}
+                    >
+                        <PopoverTrigger>
+                            <Input
+                                ref={popoverFocusRef}
+                                placeholder={webSocket !== null ? 'Enter chat here' : 'Connecting...'}
+                                size='lg'
+                                className="chat-input"
+                                value={messageToSend}
+                                isDisabled={webSocket == null}
+                                onChange={(e) => handleChatInput(e)}
+                                onKeyDown={(e) => enterSendMessage(e)}
+                            />
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverCloseButton />
+                            <PopoverHeader>Hey there!</PopoverHeader>
+                            <PopoverBody>Here, you can use the chat feature to chat with another user. Cool?</PopoverBody>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div className="input-icon-container">
                     <IconButton
