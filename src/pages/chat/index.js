@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import {
     Stack,
@@ -37,7 +37,7 @@ export default function Chat() {
         });
     }
 
-    const handleScroll = () => {
+    const handleScrollCallback = useCallback(() => {
 
         const windowScrollHeight = window.scrollY + window.innerHeight;
 
@@ -48,7 +48,8 @@ export default function Chat() {
         } else {
             setAutoScroll(true);
         }
-    }
+
+    }, [chatBoxRef])
 
     const handleChatInput = (e) => {
         setMessageToSend(e.target.value);
@@ -94,8 +95,6 @@ export default function Chat() {
                     updateMessages(e.data);
                 }
             }
-
-            window.addEventListener('scroll', (e) => handleScroll(e))
         }
 
         return () => {
@@ -103,10 +102,18 @@ export default function Chat() {
             if (webSocket !== null) {
                 webSocket.close();
             }
-
-            window.removeEventListener('scroll', (e) => handleScroll(e))
         }
     }, [webSocket]);
+
+    useEffect(() => {
+
+        window.addEventListener('scroll', (e) => handleScrollCallback(e))
+
+        return () => {
+            window.removeEventListener('scroll', (e) => handleScrollCallback(e))
+        }
+
+    }, [handleScrollCallback])
 
     useEffect(() => {
 
@@ -122,7 +129,7 @@ export default function Chat() {
 
     return (
         <div>
-            <div className="chat-container" ref={chatBoxRef}>
+            <div className="chat-container" ref={(el) => { chatBoxRef.current = el }}>
                 <Stack spacing={3}>
                     {
                         messages && messages.map((txt, i) => {
