@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { connect, setLogOut, removeSocketToken } from '@store/app';
 import {
+    useToast,
     Stack,
     Tag,
     TagLabel,
@@ -19,12 +21,20 @@ import './style.css'
 
 export default function Chat() {
 
-    const { username } = useSelector(state => state.app);
+    const toast = useToast();
+
+    const dispatch = useDispatch();
+    const dispatcher = useCallback(cb => dispatch(cb), [dispatch])
+
+
+    const { username, socketToken } = useSelector(state => state.app);
+    const [webSocketReady, setWebSocketReady] = useState(false);
     const [webSocket, setWebSocket] = useState(null);
     const [messageToSend, setMessageToSend] = useState('');
     const [messages, setMessages] = useState([]);
     const [autoScroll, setAutoScroll] = useState(true);
     const [openPopover, setOpenPopover] = useState(true);
+    const soketTokenRef = useRef(socketToken);
     const popoverFocusRef = useRef();
     const chatBoxRef = useRef();
 
@@ -79,31 +89,59 @@ export default function Chat() {
         }
     }
 
+    useEffect(() => {
+        if (socketToken == null) {
+            dispatcher(connect());
+        } else {
+            soketTokenRef.current = socketToken;
+            setWebSocketReady(true);
+        }
+
+        return () => {
+            if (socketToken !== null) {
+                dispatcher(removeSocketToken());
+            }
+        }
+    }, [socketToken, dispatcher]);
 
     useEffect(() => {
 
-        if (webSocket == null) {
-            const socket = new WebSocket('ws://localhost:8100/ws/connect');
-            console.log('Websocket connected')
+        let socket = null;
 
-            setWebSocket(socket);
+        if (webSocketReady) {
+
+            socket = new WebSocket('ws://localhost:8100/ws/connect?token=' + soketTokenRef.current);
 
             socket.onopen = () => {
 
+                console.log('Websocket connected')
+                setWebSocket(socket);
+
                 socket.onmessage = (e) => {
-                    console.log('Message from server ', e.data);
                     updateMessages(e.data);
                 }
+            }
+
+            socket.onerror = () => {
+
+                setWebSocketReady(false);
+                dispatcher(setLogOut());
+                toast({
+                    title: 'Server Error.',
+                    description: "Please contact system administrator.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                })
             }
         }
 
         return () => {
-
-            if (webSocket !== null) {
-                webSocket.close();
+            if (socket !== null) {
+                socket.close();
             }
         }
-    }, [webSocket]);
+    }, [webSocketReady, dispatcher, toast]);
 
     useEffect(() => {
 

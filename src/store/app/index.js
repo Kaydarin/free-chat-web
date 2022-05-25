@@ -5,7 +5,8 @@ const initialState = {
     loading: false,
     error: null,
     isLoggedIn: false,
-    username: null
+    username: null,
+    socketToken: null
 };
 
 export const login = createAsyncThunk(
@@ -15,6 +16,24 @@ export const login = createAsyncThunk(
         try {
 
             const { data } = await axios.post('/login', payload);
+
+            return {
+                data
+            };
+
+        } catch (e) {
+            return rejectWithValue(e);
+        }
+    },
+);
+
+export const connect = createAsyncThunk(
+    'app/connect',
+    async (_, { rejectWithValue }) => {
+
+        try {
+
+            const { data } = await axios.post('/connect');
 
             return {
                 data
@@ -54,6 +73,9 @@ export const app = createSlice({
                 ...initialState,
             };
         },
+        removeSocketToken: (state, { payload }) => {
+            state.socketToken = null;
+        },
         resetError: (state, { payload }) => {
             state.error = null;
         },
@@ -67,6 +89,11 @@ export const app = createSlice({
             state.loading = false;
             state.isLoggedIn = true;
             state.username = payload.data.username;
+        });
+
+        builder.addCase(connect.fulfilled, (state, { payload }) => {
+            state.loading = false;
+            state.socketToken = payload.data.socketToken;
         });
 
         builder.addCase(test.fulfilled, (state, { payload }) => {
@@ -106,6 +133,6 @@ export const app = createSlice({
     },
 });
 
-export const { setLogOut, resetError } = app.actions;
+export const { setLogOut, removeSocketToken, resetError } = app.actions;
 
 export default app;
