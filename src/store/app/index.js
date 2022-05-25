@@ -54,6 +54,9 @@ export const app = createSlice({
                 ...initialState,
             };
         },
+        resetError: (state, { payload }) => {
+            state.error = null;
+        },
     },
     extraReducers: builder => {
 
@@ -81,16 +84,28 @@ export const app = createSlice({
         builder.addMatcher(
             action => matchBuilder(action, '/rejected'),
             (state, { payload }) => {
+
+                let errorMessage = 'Fetch Error';
+
+                console.log(payload.response.hasOwnProperty('message'))
+                if (payload) {
+                    if (payload.hasOwnProperty('response') && payload.response.hasOwnProperty('data') && payload.response.data.hasOwnProperty('message')) {
+                        errorMessage = payload.response.data.message;
+                    } else if (payload.hasOwnProperty('message')) {
+                        errorMessage = payload.message;
+                    }
+                }
+
                 return {
                     ...state,
                     loading: false,
-                    error: payload && payload.message ? payload.message : 'Fetch Error',
+                    error: errorMessage,
                 };
             },
         );
     },
 });
 
-export const { setLogOut } = app.actions;
+export const { setLogOut, resetError } = app.actions;
 
 export default app;
