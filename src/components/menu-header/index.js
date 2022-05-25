@@ -17,9 +17,7 @@ export default function MenuHeader() {
         <nav className="header-container">
             <ul className="header-menu">
                 <li className="menus">
-                    <div>
-                        Logo
-                    </div>
+                    <img alt="Logo" />
                 </li>
             </ul>
             <ul className="header-menu">

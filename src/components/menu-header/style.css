@@ -31,3 +31,7 @@
   padding: 10px 25px;
   border-right: 1px solid #e8e8e8;
 }
+
+.menus>img {
+  height: 2.2em;
+}
